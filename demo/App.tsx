@@ -1,17 +1,15 @@
+import { Dashboard, DashboardTiles, useDashboardState } from '@/main';
+import { attachWorker } from '@rotorjs/core';
 import {
-  Dashboard,
-  DashboardTiles,
-  useDashboardState,
+  DashboardEventTarget,
   type DashboardLayoutNode,
   type DashboardTileNode,
-} from '@/main';
-import { attachWorker } from '@rotorjs/core';
-import { DashboardEventTarget } from '@rotorjs/dashboards';
+} from '@rotorjs/dashboards';
 // eslint-disable-next-line import-x/default
 import Worker from './worker?worker';
 
-import './App.css';
 import { useMemo, type PropsWithChildren } from 'react';
+import './App.css';
 
 const worker = new Worker();
 const engine = new DashboardEventTarget();

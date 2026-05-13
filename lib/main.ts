@@ -2,8 +2,6 @@ export * from './Dashboard';
 export * from './DashboardContext';
 export * from './DashboardError';
 export * from './DashboardLayout';
-export * from './DashboardLayoutNode';
-export * from './DashboardTileNode';
 export * from './DashboardTiles';
 export * from './getKey';
 export * from './useDashboardState';
