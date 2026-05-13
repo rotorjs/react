@@ -1,14 +1,22 @@
 import type {
   DashboardEventTarget,
   DashboardFact,
+  DashboardLayoutNode,
+  DashboardTileNode,
   DashboardVar,
 } from '@rotorjs/dashboards';
-import { createContext } from 'react';
-import type {
-  DashboardLayoutMap,
-  DashboardLayoutNode,
-} from './DashboardLayoutNode';
-import type { DashboardTileMap } from './DashboardTileNode';
+import {
+  createContext,
+  type ComponentType,
+  type PropsWithChildren,
+} from 'react';
+
+export type DashboardLayoutMap = Record<
+  string,
+  ComponentType<PropsWithChildren<DashboardLayoutNode>>
+>;
+
+export type DashboardTileMap = Record<string, ComponentType<DashboardTileNode>>;
 
 export type DashboardContextValue = {
   engine: DashboardEventTarget;

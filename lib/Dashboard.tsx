@@ -2,19 +2,20 @@ import { ActionEvent } from '@rotorjs/core';
 import type {
   DashboardEventTarget,
   DashboardFact,
+  DashboardLayoutNode,
+  DashboardTileNode,
   DashboardVar,
   FactDashboardAction,
   VarDashboardAction,
 } from '@rotorjs/dashboards';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { v7 as uuid } from 'uuid';
-import { DashboardContext } from './DashboardContext';
+import {
+  DashboardContext,
+  type DashboardLayoutMap,
+  type DashboardTileMap,
+} from './DashboardContext';
 import { DashboardLayout } from './DashboardLayout';
-import type {
-  DashboardLayoutMap,
-  DashboardLayoutNode,
-} from './DashboardLayoutNode';
-import type { DashboardTileMap, DashboardTileNode } from './DashboardTileNode';
 import { DashboardTiles } from './DashboardTiles';
 
 export type DashboardProps = {

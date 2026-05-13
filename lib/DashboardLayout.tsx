@@ -1,4 +1,7 @@
-import type { ErrorDashboardNode } from '@rotorjs/dashboards';
+import type {
+  DashboardLayoutNode,
+  ErrorDashboardNode,
+} from '@rotorjs/dashboards';
 import {
   useContext,
   useMemo,
@@ -6,12 +9,8 @@ import {
   type PropsWithChildren,
   type ReactNode,
 } from 'react';
-import { DashboardContext } from './DashboardContext';
+import { DashboardContext, type DashboardLayoutMap } from './DashboardContext';
 import { DashboardError } from './DashboardError';
-import type {
-  DashboardLayoutMap,
-  DashboardLayoutNode,
-} from './DashboardLayoutNode';
 import { getKey } from './getKey';
 
 export type DashboardLayoutProps = {

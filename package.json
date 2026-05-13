@@ -1,6 +1,6 @@
 {
   "name": "@rotorjs/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Rotor",
   "author": {
     "name": "Aaron Burmeister"
@@ -44,9 +44,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@jplorg/jpl": "^2.0.0",
     "@rotorjs/core": "^0.5.1",
-    "@rotorjs/dashboards": "^0.11.0",
+    "@rotorjs/dashboards": "^0.12.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^6.0.1",
@@ -68,7 +67,7 @@
   },
   "peerDependencies": {
     "@rotorjs/core": "^0.5.0",
-    "@rotorjs/dashboards": "^0.11.0"
+    "@rotorjs/dashboards": "^0.12.0"
   },
   "dependencies": {
     "uuid": "^14.0.0"
