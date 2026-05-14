@@ -1,6 +1,6 @@
 {
   "name": "@rotorjs/react",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Rotor",
   "author": {
     "name": "Aaron Burmeister"
@@ -66,7 +66,7 @@
   },
   "peerDependencies": {
     "@rotorjs/dashboards": "^0.13.0",
-    "react": ">= 19.0.0"
+    "react": "^19.0.0"
   },
   "dependencies": {
     "@rotorjs/core": "^0.5.1",
