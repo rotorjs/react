@@ -2,8 +2,8 @@ import type { DashboardTileNode } from '@rotorjs/dashboards';
 import { useContext, useMemo, type ComponentType } from 'react';
 import { DashboardContext, type DashboardTileMap } from './DashboardContext';
 import { DashboardError } from './DashboardError';
-import { getKey } from './getKey';
 import { DashboardTileError } from './DashboardTileError';
+import { getKey } from './getKey';
 
 export type DashboardTilesProps = {
   content: DashboardTileNode[];
