@@ -4,6 +4,7 @@ export * from './DashboardError';
 export * from './DashboardLayout';
 export * from './DashboardLayoutContext';
 export * from './DashboardLayoutError';
+export * from './DashboardTileContainer';
 export * from './DashboardTileError';
 export * from './DashboardTiles';
 export * from './getKey';

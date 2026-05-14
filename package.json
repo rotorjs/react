@@ -1,6 +1,6 @@
 {
   "name": "@rotorjs/react",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Rotor",
   "author": {
     "name": "Aaron Burmeister"
@@ -62,7 +62,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.3",
     "unplugin-dts": "^1.0.0",
-    "vite": "^8.0.12"
+    "vite": "^8.0.13"
   },
   "peerDependencies": {
     "@rotorjs/dashboards": "^0.13.0",

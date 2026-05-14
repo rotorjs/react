@@ -1,12 +1,9 @@
-import {
-  createContext,
-  type ComponentType,
-  type PropsWithChildren,
-} from 'react';
+import { createContext, type ComponentType } from 'react';
+import type { DashboardTileContainerProps } from './DashboardTileContainer';
 
 export type DashboardLayoutContextValue = {
   type: string;
-  tileContainer?: ComponentType<PropsWithChildren>;
+  tileContainer?: ComponentType<DashboardTileContainerProps>;
 };
 
 export const DashboardLayoutContext =
