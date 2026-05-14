@@ -8,12 +8,12 @@ import {
 } from 'react';
 import { DashboardContext, type DashboardLayoutMap } from './DashboardContext';
 import { DashboardError } from './DashboardError';
-import { getKey } from './getKey';
 import {
   DashboardLayoutContext,
   type DashboardLayoutContextValue,
 } from './DashboardLayoutContext';
 import { DashboardLayoutError } from './DashboardLayoutError';
+import { getKey } from './getKey';
 
 export type DashboardLayoutProps = {
   layout?: DashboardLayoutNode;
