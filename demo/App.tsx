@@ -1,14 +1,21 @@
-import { Dashboard, DashboardTiles, useDashboardState } from '@/main';
+import {
+  Dashboard,
+  DashboardLayoutContext,
+  DashboardTileContainer,
+  DashboardTiles,
+  useDashboardState,
+  type DashboardTileContainerProps,
+} from '@/main';
 import { attachWorker } from '@rotorjs/core';
 import {
   DashboardEventTarget,
   type DashboardLayoutNode,
   type DashboardTileNode,
 } from '@rotorjs/dashboards';
+import { useContext, useMemo, type PropsWithChildren } from 'react';
 // eslint-disable-next-line import-x/default
 import Worker from './worker?worker';
 
-import { useMemo, type PropsWithChildren } from 'react';
 import './App.css';
 
 const worker = new Worker();
@@ -17,24 +24,55 @@ attachWorker(engine, worker);
 
 (window as typeof window & { engine: DashboardEventTarget }).engine = engine;
 
-function StackLayout({ children }: PropsWithChildren<DashboardLayoutNode>) {
+function StackTile({ children }: DashboardTileContainerProps) {
+  const { type: layout } = useContext(DashboardLayoutContext);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div
+      style={{
+        backgroundColor: 'lavenderblush',
+        borderRadius: 15,
+        padding: 10,
+      }}
+      title={layout}
+    >
       {children}
     </div>
   );
 }
 
-function CardTile(_: DashboardTileNode) {
+function StackLayout({
+  type,
+  children,
+}: PropsWithChildren<DashboardLayoutNode>) {
+  const context = useMemo(() => ({ type, tileContainer: StackTile }), [type]);
+
   return (
-    <div
-      style={{ width: 100, height: 100, background: 'red', borderRadius: 10 }}
-    />
+    <DashboardLayoutContext.Provider value={context}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {children}
+      </div>
+    </DashboardLayoutContext.Provider>
+  );
+}
+
+function CardTile({ layout }: DashboardTileNode) {
+  return (
+    <DashboardTileContainer layout={layout}>
+      <div
+        style={{
+          width: 100,
+          height: 100,
+          backgroundColor: 'red',
+          borderRadius: 10,
+        }}
+      />
+    </DashboardTileContainer>
   );
 }
 
 function StateTile(_: DashboardTileNode) {
-  const state = useDashboardState(useMemo(() => ({}), []));
+  const state = useDashboardState({});
 
   return <DashboardTiles content={state} />;
 }

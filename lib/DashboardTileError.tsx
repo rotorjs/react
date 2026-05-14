@@ -1,4 +1,4 @@
-import type { ErrorDashboardNode } from '@rotorjs/dashboards';
+import type { ErrorDashboardTileNode } from '@rotorjs/dashboards';
 import { useContext, type ComponentType } from 'react';
 import { DashboardContext } from './DashboardContext';
 import { DashboardError } from './DashboardError';
@@ -15,7 +15,7 @@ export function DashboardTileError({
   const { tiles } = useContext(DashboardContext);
 
   const Error = (tiles.error ??
-    DashboardError) as ComponentType<ErrorDashboardNode>;
+    DashboardError) as ComponentType<ErrorDashboardTileNode>;
 
   const errorNode = { type: 'error' as const, id, error };
 

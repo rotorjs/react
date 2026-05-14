@@ -1,4 +1,4 @@
-import type { ErrorDashboardNode } from '@rotorjs/dashboards';
+import type { ErrorDashboardLayoutNode } from '@rotorjs/dashboards';
 import { useContext, type ComponentType, type PropsWithChildren } from 'react';
 import { DashboardContext } from './DashboardContext';
 import { DashboardError } from './DashboardError';
@@ -19,7 +19,7 @@ export function DashboardLayoutError({
   const { layouts } = useContext(DashboardContext);
 
   const Error = (layouts.error ?? DashboardError) as ComponentType<
-    PropsWithChildren<ErrorDashboardNode>
+    PropsWithChildren<ErrorDashboardLayoutNode>
   >;
 
   const errorNode = { type: 'error' as const, id, error };
