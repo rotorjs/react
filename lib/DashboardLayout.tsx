@@ -1,7 +1,4 @@
-import type {
-  DashboardLayoutNode,
-  ErrorDashboardNode,
-} from '@rotorjs/dashboards';
+import type { DashboardLayoutNode } from '@rotorjs/dashboards';
 import {
   useContext,
   useMemo,
@@ -12,6 +9,11 @@ import {
 import { DashboardContext, type DashboardLayoutMap } from './DashboardContext';
 import { DashboardError } from './DashboardError';
 import { getKey } from './getKey';
+import {
+  DashboardLayoutContext,
+  type DashboardLayoutContextValue,
+} from './DashboardLayoutContext';
+import { DashboardLayoutError } from './DashboardLayoutError';
 
 export type DashboardLayoutProps = {
   layout?: DashboardLayoutNode;
@@ -32,21 +34,30 @@ export function DashboardLayout({ layout, children }: DashboardLayoutProps) {
   );
 
   const layoutNode = layout ?? defaultLayout;
-  if (!layoutNode) return null;
+  const layoutType = layoutNode?.type;
+
+  const context = useMemo<DashboardLayoutContextValue>(
+    () => ({ type: layoutType! }),
+    [layoutType],
+  );
+
+  if (!layoutNode?.type) return null;
 
   const Layout = layouts[layoutNode.type];
+
   if (!Layout) {
-    const Error = layouts.error as ComponentType<ErrorDashboardNode>;
-    const errorNode = {
-      type: 'error' as const,
-      error: `Invalid layout type "${layoutNode.type}"`,
-    };
-    return <Error {...errorNode} key={getKey(errorNode)} />;
+    return (
+      <DashboardLayoutError error={`Invalid layout type "${layoutNode.type}"`}>
+        {children}
+      </DashboardLayoutError>
+    );
   }
 
   return (
-    <Layout {...layoutNode} key={getKey(layoutNode)}>
-      {children}
-    </Layout>
+    <DashboardLayoutContext.Provider value={context}>
+      <Layout {...layoutNode} key={getKey(layoutNode)}>
+        {children}
+      </Layout>
+    </DashboardLayoutContext.Provider>
   );
 }
