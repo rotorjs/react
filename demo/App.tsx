@@ -6,12 +6,12 @@ import {
   useDashboardState,
   type DashboardTileContainerProps,
 } from '@/main';
-import { attachWorker } from '@rotorjs/core';
 import {
   DashboardEventTarget,
   type DashboardLayoutNode,
   type DashboardTileNode,
-} from '@rotorjs/dashboards';
+} from '@rotorjs/dashboard';
+import { attachWorker } from '@rotorjs/state';
 import { useContext, useMemo, type PropsWithChildren } from 'react';
 // eslint-disable-next-line import-x/default
 import Worker from './worker?worker';
@@ -36,7 +36,7 @@ function StackTile({ children }: DashboardTileContainerProps) {
       }}
       title={layout}
     >
-      {children}
+      {children({ style: { borderRadius: 10 } })}
     </div>
   );
 }
@@ -59,30 +59,30 @@ function StackLayout({
 function CardTile({ layout }: DashboardTileNode) {
   return (
     <DashboardTileContainer layout={layout}>
-      <div
-        style={{
-          width: 100,
-          height: 100,
-          backgroundColor: 'red',
-          borderRadius: 10,
-        }}
-      />
+      {({ style: layoutStyle, ...layoutProps }) => (
+        <div
+          {...layoutProps}
+          style={{
+            ...layoutStyle,
+            width: 100,
+            height: 100,
+            backgroundColor: 'red',
+          }}
+        />
+      )}
     </DashboardTileContainer>
   );
 }
 
 function StateTile(_: DashboardTileNode) {
-  const state = useDashboardState({});
+  const state = useDashboardState({ type: 'demo' });
 
   return <DashboardTiles content={state} />;
 }
 
 const layouts = { stack: StackLayout };
-
 const defaultLayout = { type: 'stack' };
-
 const tiles = { card: CardTile, state: StateTile };
-
 const content = [{ type: 'card' }, { type: 'state' }];
 
 export default function App() {

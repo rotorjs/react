@@ -1,4 +1,4 @@
-import type { ErrorDashboardNode } from '@rotorjs/dashboards';
+import type { ErrorDashboardNode } from '@rotorjs/dashboard';
 
 export function DashboardError({ error }: ErrorDashboardNode) {
   throw error;

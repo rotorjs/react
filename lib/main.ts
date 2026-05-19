@@ -7,5 +7,5 @@ export * from './DashboardLayoutError';
 export * from './DashboardTileContainer';
 export * from './DashboardTileError';
 export * from './DashboardTiles';
-export * from './getKey';
+export * from './getNodeKey';
 export * from './useDashboardState';

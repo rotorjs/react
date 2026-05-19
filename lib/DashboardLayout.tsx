@@ -1,4 +1,4 @@
-import type { DashboardLayoutNode } from '@rotorjs/dashboards';
+import type { DashboardLayoutNode } from '@rotorjs/dashboard';
 import {
   useContext,
   useMemo,
@@ -13,7 +13,7 @@ import {
   type DashboardLayoutContextValue,
 } from './DashboardLayoutContext';
 import { DashboardLayoutError } from './DashboardLayoutError';
-import { getKey } from './getKey';
+import { getNodeKey } from './getNodeKey';
 
 export type DashboardLayoutProps = {
   layout?: DashboardLayoutNode;
@@ -55,7 +55,7 @@ export function DashboardLayout({ layout, children }: DashboardLayoutProps) {
 
   return (
     <DashboardLayoutContext.Provider value={context}>
-      <Layout {...layoutNode} key={getKey(layoutNode)}>
+      <Layout {...layoutNode} key={getNodeKey(layoutNode)}>
         {children}
       </Layout>
     </DashboardLayoutContext.Provider>

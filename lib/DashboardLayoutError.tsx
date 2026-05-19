@@ -1,9 +1,9 @@
-import type { ErrorDashboardLayoutNode } from '@rotorjs/dashboards';
+import type { ErrorDashboardLayoutNode } from '@rotorjs/dashboard';
 import { useContext, type ComponentType, type PropsWithChildren } from 'react';
 import { DashboardContext } from './DashboardContext';
 import { DashboardError } from './DashboardError';
 import { DashboardLayoutContext } from './DashboardLayoutContext';
-import { getKey } from './getKey';
+import { getNodeKey } from './getNodeKey';
 
 const context = { type: 'error' };
 
@@ -26,7 +26,7 @@ export function DashboardLayoutError({
 
   return (
     <DashboardLayoutContext.Provider value={context}>
-      <Error {...errorNode} key={getKey(errorNode)}>
+      <Error {...errorNode} key={getNodeKey(errorNode)}>
         {children}
       </Error>
     </DashboardLayoutContext.Provider>

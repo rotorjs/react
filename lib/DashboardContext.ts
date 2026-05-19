@@ -4,7 +4,7 @@ import type {
   DashboardLayoutNode,
   DashboardTileNode,
   DashboardVar,
-} from '@rotorjs/dashboards';
+} from '@rotorjs/dashboard';
 import {
   createContext,
   type ComponentType,

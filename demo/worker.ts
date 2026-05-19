@@ -1,17 +1,14 @@
-import { attachWorker } from '@rotorjs/core';
 import {
   DashboardEngine,
-  DashboardReducer,
+  DashboardStateReducer,
   type DashboardState,
-} from '@rotorjs/dashboards';
+  type DashboardStateDescriptor,
+} from '@rotorjs/dashboard';
+import { attachWorker } from '@rotorjs/state';
 
-class DemoReducer extends DashboardReducer {
-  constructor(
-    engine: DashboardEngine,
-    initialState: DashboardState,
-    callback: (state: DashboardState) => void,
-  ) {
-    super(engine, initialState, callback);
+class DemoReducer extends DashboardStateReducer {
+  constructor(engine: DashboardEngine, descriptor: DashboardStateDescriptor) {
+    super(engine, descriptor);
 
     this.update();
   }
@@ -21,7 +18,10 @@ class DemoReducer extends DashboardReducer {
   }
 }
 
-const engine = new DashboardEngine(
-  (engine, _init, callback) => new DemoReducer(engine, [], callback),
-);
+const engine = new DashboardEngine({
+  demo: {
+    getReducerID: () => '',
+    createReducer: (engine, descriptor) => new DemoReducer(engine, descriptor),
+  },
+});
 attachWorker(engine, self);
