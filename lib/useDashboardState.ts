@@ -1,44 +1,40 @@
-import type { DashboardReducerInit, DashboardState } from '@rotorjs/dashboards';
+import {
+  DashboardStateConsumer,
+  type DashboardState,
+  type DashboardStateDescriptor,
+} from '@rotorjs/dashboard';
 import deepEquals from 'fast-deep-equal';
 import { useContext, useEffect, useState } from 'react';
-import { v7 as uuid } from 'uuid';
 import { DashboardContext } from './DashboardContext';
 
 export function useDashboardState(
-  init: DashboardReducerInit,
+  descriptor: DashboardStateDescriptor,
   initialState: DashboardState = [],
 ): DashboardState {
   const { engine } = useContext(DashboardContext);
 
-  const [memoInit, setMemoInit] = useState(init);
+  const [memoDescriptor, setMemoDescriptor] = useState(descriptor);
   const [state, setState] = useState(initialState);
 
-  if (!deepEquals(init, memoInit)) {
-    setMemoInit(memoInit);
+  if (!deepEquals(memoDescriptor, descriptor)) {
+    setMemoDescriptor(descriptor);
   }
 
   useEffect(() => {
-    const id = uuid();
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    engine.addEventListener(
-      'state',
-      (event) => {
-        if (event.id === id) {
-          setState(event.state);
-        }
+    const consumer = new DashboardStateConsumer(
+      engine,
+      memoDescriptor,
+      (nextState) => {
+        setState((prevState) =>
+          deepEquals(nextState, prevState) ? prevState : nextState,
+        );
       },
-      { signal },
     );
 
-    engine.registerReducer(id, memoInit);
-
     return () => {
-      controller.abort();
-      engine.removeReducer(id);
+      consumer.stop();
     };
-  }, [memoInit, engine]);
+  }, [engine, memoDescriptor]);
 
   return state;
 }

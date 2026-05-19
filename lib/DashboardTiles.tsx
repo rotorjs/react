@@ -1,9 +1,9 @@
-import type { DashboardTileNode } from '@rotorjs/dashboards';
+import type { DashboardTileNode } from '@rotorjs/dashboard';
 import { useContext, useMemo, type ComponentType } from 'react';
 import { DashboardContext, type DashboardTileMap } from './DashboardContext';
 import { DashboardError } from './DashboardError';
 import { DashboardTileError } from './DashboardTileError';
-import { getKey } from './getKey';
+import { getNodeKey } from './getNodeKey';
 
 export type DashboardTilesProps = {
   content: DashboardTileNode[];
@@ -29,13 +29,13 @@ export function DashboardTiles({ content }: DashboardTilesProps) {
         if (!Tile) {
           return (
             <DashboardTileError
-              key={getKey({ type: 'error' }, index)}
+              key={getNodeKey({ type: 'error' }, index)}
               error={`Invalid tile type "${tileNode.type}"`}
             />
           );
         }
 
-        return <Tile {...tileNode} key={getKey(tileNode, index)} />;
+        return <Tile {...tileNode} key={getNodeKey(tileNode, index)} />;
       })}
     </>
   );
