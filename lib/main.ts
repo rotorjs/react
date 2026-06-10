@@ -9,3 +9,4 @@ export * from './DashboardTileError';
 export * from './DashboardTiles';
 export * from './getNodeKey';
 export * from './useDashboardState';
+export * from './useNumberFormatter';
