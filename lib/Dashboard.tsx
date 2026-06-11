@@ -1,18 +1,15 @@
-import type {
-  DashboardAction,
-  DashboardEventTarget,
-  DashboardFact,
-  DashboardLayoutNode,
-  DashboardTileNode,
-  DashboardVar,
-  FactDashboardAction,
-  NavigateDashboardAction,
-  VarDashboardAction,
+import {
+  DashboardEnvironment,
+  type DashboardAction,
+  type DashboardEventTarget,
+  type DashboardFact,
+  type DashboardLayoutNode,
+  type DashboardTileNode,
+  type DashboardVar,
+  type NavigateDashboardAction,
 } from '@rotorjs/dashboard';
-import { ActionEvent } from '@rotorjs/state';
 import deepEquals from 'fast-deep-equal';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { v7 as uuid } from 'uuid';
 import {
   DashboardContext,
   type DashboardLayoutMap,
@@ -24,7 +21,7 @@ import { DashboardTiles } from './DashboardTiles';
 const defaultNavigateOrigins = { [window.location.origin]: true };
 
 export type DashboardProps = {
-  engine: DashboardEventTarget;
+  target: DashboardEventTarget;
   initialVars?: { [name: string]: DashboardVar };
   initialFacts?: { [name: string]: DashboardFact };
   layouts: DashboardLayoutMap;
@@ -38,9 +35,9 @@ export type DashboardProps = {
 };
 
 export function Dashboard({
-  engine,
-  initialVars: rawInitialVars,
-  initialFacts: rawInitialFacts,
+  target,
+  initialVars,
+  initialFacts,
   layouts,
   defaultLayout,
   tiles,
@@ -50,92 +47,58 @@ export function Dashboard({
   allowedNavigateOrigins: rawAllowedNavigateOrigins = defaultNavigateOrigins,
   children,
 }: DashboardProps) {
-  const [emitterID] = useState(() => uuid());
-  const [initialVars] = useState(rawInitialVars ?? {});
-  const [initialFacts] = useState(rawInitialFacts ?? {});
   const [allowedNavigateOrigins, setAllowedNavigateOrigins] = useState(
     rawAllowedNavigateOrigins,
   );
-  const [vars, setVars] = useState(initialVars);
-  const [facts, setFacts] = useState(initialFacts);
+  const [vars, setVars] = useState(initialVars ?? {});
+  const [facts, setFacts] = useState(initialFacts ?? {});
 
   if (!deepEquals(allowedNavigateOrigins, rawAllowedNavigateOrigins)) {
     setAllowedNavigateOrigins(rawAllowedNavigateOrigins);
   }
 
   useEffect(() => {
-    Object.entries(initialVars).forEach(([name, { value, exposed }]) => {
-      const e = new ActionEvent({
-        type: 'var',
-        name,
-        value,
-        exposed,
-      } satisfies VarDashboardAction);
-      e.emitter = emitterID;
-      engine.dispatchEvent(e);
+    const environment = new DashboardEnvironment(target, { vars, facts });
+
+    environment.addEventListener('var', (event) => {
+      setVars((prev) => {
+        const prevValue = prev[event.name];
+        const nextValue = { value: event.value, exposed: event.exposed };
+        if (Object.hasOwn(prev, event.name) && deepEquals(prevValue, nextValue))
+          return prev;
+        return { ...prev, [event.name]: nextValue };
+      });
     });
 
-    Object.entries(initialFacts).forEach(([name, { value }]) => {
-      const e = new ActionEvent({
-        type: 'fact',
-        name,
-        value,
-      } satisfies FactDashboardAction);
-      e.emitter = emitterID;
-      engine.dispatchEvent(e);
+    environment.addEventListener('fact', (event) => {
+      setFacts((prev) => {
+        const prevValue = prev[event.name];
+        const nextValue = { value: event.value };
+        if (Object.hasOwn(prev, event.name) && deepEquals(prevValue, nextValue))
+          return prev;
+        return { ...prev, [event.name]: nextValue };
+      });
     });
-  }, [emitterID, engine, initialVars, initialFacts]);
+
+    return () => {
+      environment.stop();
+    };
+    // Changes to vars and facts from the state system mustn't recreate a new environment.
+    // However, if target is replaced, the currently known vars and facts should be synchronized into the state system.
+    // This is why vars and facts are not included in the dependencies array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target]);
 
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    engine.addEventListener(
+    target.addEventListener(
       'action',
       (event) => {
         const action = event.action as
-          | VarDashboardAction
-          | FactDashboardAction
           | NavigateDashboardAction
           | { type: never };
-
-        if (event.emitter !== emitterID) {
-          switch (action.type) {
-            case 'var':
-              setVars((prev) => {
-                const prevVar = prev[action.name];
-                if (
-                  Object.hasOwn(prev, action.name) &&
-                  prevVar.value === action.value &&
-                  prevVar.exposed === (action.exposed ?? false)
-                )
-                  return prev;
-                return {
-                  ...prev,
-                  [action.name]: {
-                    value: action.value,
-                    exposed: action.exposed ?? false,
-                  },
-                };
-              });
-              break;
-
-            case 'fact':
-              setFacts((prev) => {
-                const prevFact = prev[action.name];
-                if (
-                  Object.hasOwn(prev, action.name) &&
-                  prevFact.value === action.value
-                )
-                  return prev;
-                return {
-                  ...prev,
-                  [action.name]: { value: action.value },
-                };
-              });
-              break;
-          }
-        }
 
         const handled = onAction?.(event.action);
         if (handled) return;
@@ -166,11 +129,11 @@ export function Dashboard({
     return () => {
       controller.abort();
     };
-  }, [emitterID, engine, onAction, allowedNavigateOrigins]);
+  }, [target, onAction, allowedNavigateOrigins]);
 
   const context = useMemo(
-    () => ({ engine, vars, facts, layouts, defaultLayout, tiles }),
-    [engine, vars, facts, layouts, defaultLayout, tiles],
+    () => ({ target, vars, facts, layouts, defaultLayout, tiles }),
+    [target, vars, facts, layouts, defaultLayout, tiles],
   );
 
   return (

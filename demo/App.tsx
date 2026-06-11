@@ -19,10 +19,10 @@ import Worker from './worker?worker';
 import './App.css';
 
 const worker = new Worker();
-const engine = new DashboardEventTarget();
-attachWorker(engine, worker);
+const target = new DashboardEventTarget();
+attachWorker(target, worker);
 
-(window as typeof window & { engine: DashboardEventTarget }).engine = engine;
+(window as typeof window & { target: DashboardEventTarget }).target = target;
 
 function StackTile({ children }: DashboardTileContainerProps) {
   const { type: layout } = useContext(DashboardLayoutContext);
@@ -88,7 +88,7 @@ const content = [{ type: 'card' }, { type: 'state' }];
 export default function App() {
   return (
     <Dashboard
-      engine={engine}
+      target={target}
       layouts={layouts}
       defaultLayout={defaultLayout}
       tiles={tiles}
