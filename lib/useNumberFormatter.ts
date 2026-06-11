@@ -13,7 +13,7 @@ export type NumberFormatterOptions = {
 export function useNumberFormatter(init?: NumberFormatterOptions) {
   const { facts } = useContext(DashboardContext);
 
-  const localeFact = facts[dashboardLocaleFact];
+  const localeFact = facts[dashboardLocaleFact]?.value;
   const locale =
     init?.locale ||
     (typeof localeFact === 'string' && localeFact ? localeFact : undefined);
