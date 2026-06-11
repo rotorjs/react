@@ -19,7 +19,7 @@ export type DashboardLayoutMap = Record<
 export type DashboardTileMap = Record<string, ComponentType<DashboardTileNode>>;
 
 export type DashboardContextValue = {
-  engine: DashboardEventTarget;
+  target: DashboardEventTarget;
   vars: { [name: string]: DashboardVar };
   facts: { [name: string]: DashboardFact };
   layouts: DashboardLayoutMap;

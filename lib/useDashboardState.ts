@@ -11,7 +11,7 @@ export function useDashboardState(
   descriptor: DashboardStateDescriptor,
   initialState: DashboardState = [],
 ): DashboardState {
-  const { engine } = useContext(DashboardContext);
+  const { target } = useContext(DashboardContext);
 
   const [memoDescriptor, setMemoDescriptor] = useState(descriptor);
   const [state, setState] = useState(initialState);
@@ -22,7 +22,7 @@ export function useDashboardState(
 
   useEffect(() => {
     const consumer = new DashboardStateConsumer(
-      engine,
+      target,
       memoDescriptor,
       (nextState) => {
         setState((prevState) =>
@@ -34,7 +34,7 @@ export function useDashboardState(
     return () => {
       consumer.stop();
     };
-  }, [engine, memoDescriptor]);
+  }, [target, memoDescriptor]);
 
   return state;
 }

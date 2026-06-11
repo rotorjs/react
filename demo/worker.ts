@@ -1,5 +1,6 @@
 import {
   DashboardEngine,
+  DashboardEventTarget,
   DashboardStateReducer,
   type DashboardState,
   type DashboardStateDescriptor,
@@ -18,10 +19,11 @@ class DemoReducer extends DashboardStateReducer {
   }
 }
 
-const engine = new DashboardEngine({
+const target = new DashboardEventTarget();
+attachWorker(target, self);
+const _engine = new DashboardEngine(target, {
   demo: {
     getReducerID: () => '',
     createReducer: (engine, descriptor) => new DemoReducer(engine, descriptor),
   },
 });
-attachWorker(engine, self);
