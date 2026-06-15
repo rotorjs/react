@@ -40,3 +40,4 @@ export function DashboardTiles({ content }: DashboardTilesProps) {
     </>
   );
 }
+DashboardTiles.displayName = 'DashboardTiles';

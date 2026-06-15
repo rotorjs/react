@@ -30,3 +30,4 @@ export type DashboardContextValue = {
 export const DashboardContext = createContext<DashboardContextValue>(
   undefined as unknown as DashboardContextValue,
 );
+DashboardContext.displayName = 'DashboardContext';

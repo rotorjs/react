@@ -21,3 +21,4 @@ export function DashboardTileError({
 
   return <Error {...errorNode} key={getNodeKey(errorNode)} />;
 }
+DashboardTileError.displayName = 'DashboardTileError';

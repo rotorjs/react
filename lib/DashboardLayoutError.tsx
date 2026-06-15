@@ -32,3 +32,4 @@ export function DashboardLayoutError({
     </DashboardLayoutContext.Provider>
   );
 }
+DashboardLayoutError.displayName = 'DashboardLayoutError';

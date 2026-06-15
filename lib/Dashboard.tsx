@@ -146,3 +146,4 @@ export function Dashboard({
     </DashboardContext.Provider>
   );
 }
+Dashboard.displayName = 'Dashboard';
