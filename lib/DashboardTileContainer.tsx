@@ -20,3 +20,4 @@ export function DashboardTileContainer({
 
   return <Container layout={layout}>{children}</Container>;
 }
+DashboardTileContainer.displayName = 'DashboardTileContainer';

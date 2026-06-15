@@ -10,3 +10,4 @@ export const DashboardLayoutContext =
   createContext<DashboardLayoutContextValue>(
     undefined as unknown as DashboardLayoutContextValue,
   );
+DashboardLayoutContext.displayName = 'DashboardLayoutContext';

@@ -61,3 +61,4 @@ export function DashboardLayout({ layout, children }: DashboardLayoutProps) {
     </DashboardLayoutContext.Provider>
   );
 }
+DashboardLayout.displayName = 'DashboardLayout';
