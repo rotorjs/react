@@ -1,4 +1,5 @@
 import type {
+  DashboardAction,
   DashboardEventTarget,
   DashboardFact,
   DashboardLayoutNode,
@@ -18,6 +19,8 @@ export type DashboardLayoutMap = Record<
 
 export type DashboardTileMap = Record<string, ComponentType<DashboardTileNode>>;
 
+export type ApproveUserActionFunction = (action: DashboardAction) => boolean;
+
 export type DashboardContextValue = {
   target: DashboardEventTarget;
   vars: { [name: string]: DashboardVar };
@@ -25,6 +28,7 @@ export type DashboardContextValue = {
   layouts: DashboardLayoutMap;
   defaultLayout?: DashboardLayoutNode;
   tiles: DashboardTileMap;
+  approveUserAction: ApproveUserActionFunction;
 };
 
 export const DashboardContext = createContext<DashboardContextValue>(

@@ -1,6 +1,6 @@
 {
   "name": "@rotorjs/react",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "Rotor",
   "author": {
     "name": "Aaron Burmeister"
@@ -60,7 +60,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.0",
+    "typescript-eslint": "^8.61.1",
     "unplugin-dts": "^1.0.2",
     "vite": "^8.0.16"
   },

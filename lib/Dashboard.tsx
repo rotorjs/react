@@ -12,6 +12,7 @@ import deepEquals from 'fast-deep-equal';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   DashboardContext,
+  type ApproveUserActionFunction,
   type DashboardLayoutMap,
   type DashboardTileMap,
 } from './DashboardContext';
@@ -29,6 +30,7 @@ export type DashboardProps = {
   tiles: DashboardTileMap;
   layout?: DashboardLayoutNode;
   content: DashboardTileNode[];
+  approveUserAction?: ApproveUserActionFunction;
   onAction?: (action: DashboardAction) => boolean | void;
   allowedNavigateOrigins?: { [origin: string]: boolean };
   children?: ReactNode;
@@ -43,6 +45,7 @@ export function Dashboard({
   tiles,
   layout,
   content,
+  approveUserAction,
   onAction,
   allowedNavigateOrigins: rawAllowedNavigateOrigins = defaultNavigateOrigins,
   children,
@@ -132,8 +135,16 @@ export function Dashboard({
   }, [target, onAction, allowedNavigateOrigins]);
 
   const context = useMemo(
-    () => ({ target, vars, facts, layouts, defaultLayout, tiles }),
-    [target, vars, facts, layouts, defaultLayout, tiles],
+    () => ({
+      target,
+      vars,
+      facts,
+      layouts,
+      defaultLayout,
+      tiles,
+      approveUserAction: approveUserAction ?? (() => true),
+    }),
+    [target, vars, facts, layouts, defaultLayout, tiles, approveUserAction],
   );
 
   return (
