@@ -117,8 +117,8 @@ export function Dashboard({
                 );
                 break;
               }
-              if (action.replace) window.location.replace(action.href);
-              else window.location.assign(action.href);
+              if (action.replace) window.location.replace(url.href);
+              else window.location.assign(url.href);
               break;
             }
           }
