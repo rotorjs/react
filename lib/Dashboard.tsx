@@ -110,7 +110,7 @@ export function Dashboard({
 
           switch (action.type) {
             case 'navigate': {
-              const url = new URL(action.href, window.location.href);
+              const url = new URL(action.href ?? '', window.location.href);
               if (!approveNavigation(url)) {
                 console.warn(
                   `Dashboard navigation blocked: URL "${url.href}" is not allowed`,
