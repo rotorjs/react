@@ -9,7 +9,13 @@ import {
   type NavigateDashboardAction,
 } from '@rotorjs/dashboard';
 import deepEquals from 'fast-deep-equal';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  useInsertionEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   DashboardContext,
   type ApproveUserActionFunction,
@@ -60,7 +66,7 @@ export function Dashboard({
   // eslint-disable-next-line react-hooks/refs
   approveNavigationRef.current = approveNavigation;
 
-  useEffect(() => {
+  useInsertionEffect(() => {
     const environment = new DashboardEnvironment(target, { vars, facts });
 
     environment.addEventListener('var', (event) => {
@@ -89,10 +95,9 @@ export function Dashboard({
     // Changes to vars and facts from the state system mustn't recreate a new environment.
     // However, if target is replaced, the currently known vars and facts should be synchronized into the state system.
     // This is why vars and facts are not included in the dependencies array.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target]);
 
-  useEffect(() => {
+  useInsertionEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
