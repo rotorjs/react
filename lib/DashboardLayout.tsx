@@ -1,12 +1,11 @@
 import type { DashboardLayoutNode } from '@rotorjs/dashboard';
 import {
-  useContext,
   useMemo,
   type ComponentType,
   type PropsWithChildren,
   type ReactNode,
 } from 'react';
-import { DashboardContext, type DashboardLayoutMap } from './DashboardContext';
+import { type DashboardLayoutMap } from './DashboardContext';
 import { DashboardError } from './DashboardError';
 import {
   DashboardLayoutContext,
@@ -14,6 +13,7 @@ import {
 } from './DashboardLayoutContext';
 import { DashboardLayoutError } from './DashboardLayoutError';
 import { getNodeKey } from './getNodeKey';
+import { useDashboardContext } from './useDashboardContext';
 
 export type DashboardLayoutProps = {
   layout?: DashboardLayoutNode;
@@ -21,7 +21,7 @@ export type DashboardLayoutProps = {
 };
 
 export function DashboardLayout({ layout, children }: DashboardLayoutProps) {
-  const { layouts: userLayouts, defaultLayout } = useContext(DashboardContext);
+  const { layouts: userLayouts, defaultLayout } = useDashboardContext();
 
   const layouts = useMemo<DashboardLayoutMap>(
     () => ({

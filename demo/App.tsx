@@ -3,6 +3,7 @@ import {
   DashboardLayoutContext,
   DashboardTileContainer,
   DashboardTiles,
+  useDashboardLayoutContext,
   useDashboardState,
   type DashboardTileContainerProps,
 } from '@/main';
@@ -12,7 +13,7 @@ import {
   type DashboardTileNode,
 } from '@rotorjs/dashboard';
 import { attachWorker } from '@rotorjs/state';
-import { useContext, useMemo, type PropsWithChildren } from 'react';
+import { useMemo, type PropsWithChildren } from 'react';
 // eslint-disable-next-line import-x/default
 import Worker from './worker?worker';
 
@@ -25,7 +26,7 @@ attachWorker(target, worker);
 (window as typeof window & { target: DashboardEventTarget }).target = target;
 
 function StackTile({ children }: DashboardTileContainerProps) {
-  const { type: layout } = useContext(DashboardLayoutContext);
+  const { type: layout } = useDashboardLayoutContext();
 
   return (
     <div

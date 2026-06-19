@@ -1,9 +1,9 @@
 import type { ErrorDashboardLayoutNode } from '@rotorjs/dashboard';
-import { useContext, type ComponentType, type PropsWithChildren } from 'react';
-import { DashboardContext } from './DashboardContext';
+import { type ComponentType, type PropsWithChildren } from 'react';
 import { DashboardError } from './DashboardError';
 import { DashboardLayoutContext } from './DashboardLayoutContext';
 import { getNodeKey } from './getNodeKey';
+import { useDashboardContext } from './useDashboardContext';
 
 const context = { type: 'error' };
 
@@ -16,7 +16,7 @@ export function DashboardLayoutError({
   id?: string;
   error: unknown;
 }>) {
-  const { layouts } = useContext(DashboardContext);
+  const { layouts } = useDashboardContext();
 
   const Error = (layouts.error ?? DashboardError) as ComponentType<
     PropsWithChildren<ErrorDashboardLayoutNode>

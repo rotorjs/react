@@ -4,14 +4,14 @@ import {
   type DashboardStateDescriptor,
 } from '@rotorjs/dashboard';
 import deepEquals from 'fast-deep-equal';
-import { useContext, useEffect, useState } from 'react';
-import { DashboardContext } from './DashboardContext';
+import { useEffect, useState } from 'react';
+import { useDashboardContext } from './useDashboardContext';
 
 export function useDashboardState(
   descriptor: DashboardStateDescriptor,
   initialState: DashboardState = [],
 ): DashboardState {
-  const { target } = useContext(DashboardContext);
+  const { target } = useDashboardContext();
 
   const [memoDescriptor, setMemoDescriptor] = useState(descriptor);
   const [state, setState] = useState(initialState);
@@ -21,6 +21,8 @@ export function useDashboardState(
   }
 
   useEffect(() => {
+    if (!target) return;
+
     const consumer = new DashboardStateConsumer(
       target,
       memoDescriptor,

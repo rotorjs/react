@@ -1,6 +1,6 @@
 {
   "name": "@rotorjs/react",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Rotor",
   "author": {
     "name": "Aaron Burmeister"
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@rotorjs/dashboard": "^0.7.1",
+    "@rotorjs/dashboard": "^0.7.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^6.0.2",
