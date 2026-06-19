@@ -1,6 +1,6 @@
 import type { DashboardLayoutConfig } from '@rotorjs/dashboard';
-import { useContext, type CSSProperties, type ReactNode } from 'react';
-import { DashboardLayoutContext } from './DashboardLayoutContext';
+import { type CSSProperties, type ReactNode } from 'react';
+import { useDashboardLayoutContext } from './useDashboardLayoutContext';
 
 export type DashboardTileContainerProps = {
   layout?: DashboardLayoutConfig;
@@ -14,7 +14,7 @@ export function DashboardTileContainer({
   layout,
   children,
 }: DashboardTileContainerProps) {
-  const { tileContainer: Container } = useContext(DashboardLayoutContext);
+  const { tileContainer: Container } = useDashboardLayoutContext();
 
   if (!Container) return children({});
 

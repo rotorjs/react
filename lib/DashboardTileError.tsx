@@ -1,8 +1,8 @@
 import type { ErrorDashboardTileNode } from '@rotorjs/dashboard';
-import { useContext, type ComponentType } from 'react';
-import { DashboardContext } from './DashboardContext';
+import { type ComponentType } from 'react';
 import { DashboardError } from './DashboardError';
 import { getNodeKey } from './getNodeKey';
+import { useDashboardContext } from './useDashboardContext';
 
 export function DashboardTileError({
   id,
@@ -12,7 +12,7 @@ export function DashboardTileError({
   id?: string;
   error: unknown;
 }) {
-  const { tiles } = useContext(DashboardContext);
+  const { tiles } = useDashboardContext();
 
   const Error = (tiles.error ??
     DashboardError) as ComponentType<ErrorDashboardTileNode>;

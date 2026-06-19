@@ -3,15 +3,15 @@ import {
   NumberFormatter,
   type NumberFormat,
 } from '@rotorjs/dashboard';
-import { useCallback, useContext, useMemo } from 'react';
-import { DashboardContext } from './DashboardContext';
+import { useCallback, useMemo } from 'react';
+import { useDashboardContext } from './useDashboardContext';
 
 export type NumberFormatterOptions = {
   locale?: Intl.UnicodeBCP47LocaleIdentifier;
 };
 
 export function useNumberFormatter(init?: NumberFormatterOptions) {
-  const { facts } = useContext(DashboardContext);
+  const { facts } = useDashboardContext();
 
   const localeFact = facts[dashboardLocaleFact]?.value;
   const locale =

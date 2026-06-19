@@ -1,7 +1,7 @@
 import {
   DashboardEnvironment,
+  DashboardEventTarget,
   type DashboardAction,
-  type DashboardEventTarget,
   type DashboardFact,
   type DashboardLayoutNode,
   type DashboardTileNode,
@@ -9,12 +9,13 @@ import {
   type NavigateDashboardAction,
 } from '@rotorjs/dashboard';
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
   type ReactNode,
-  type RefObject,
 } from 'react';
 import {
   DashboardContext,
@@ -33,7 +34,7 @@ const defaultApproveNavigation: ApproveNavigationFunction = (url) =>
 const defaultApproveUserAction: ApproveUserActionFunction = () => true;
 
 export type DashboardProps = {
-  target: DashboardEventTarget;
+  target: Promise<DashboardEventTarget> | DashboardEventTarget;
   initialVars?: { [name: string]: DashboardVar };
   initialFacts?: { [name: string]: DashboardFact };
   layouts: DashboardLayoutMap;
@@ -48,9 +49,9 @@ export type DashboardProps = {
 };
 
 export function Dashboard({
-  target,
-  initialVars,
-  initialFacts,
+  target: targetProp,
+  initialVars: initialVarsProp,
+  initialFacts: initialFactsProp,
   layouts,
   defaultLayout,
   tiles,
@@ -61,61 +62,125 @@ export function Dashboard({
   onAction,
   children,
 }: DashboardProps) {
-  /* eslint-disable react-hooks/refs */
-  const environmentRef = useRef<EnvironmentHandler>(undefined);
-  if (!environmentRef.current) {
-    environmentRef.current = setupEnvironment(
-      target,
-      Object.entries(initialVars ?? {}),
-      Object.entries(initialFacts ?? {}),
+  const [targetPromise] = useState(targetProp);
+  if (targetPromise !== targetProp) {
+    console.warn(
+      "Target must not replaced in a Dashboard's lifetime. Reuse the existing target or set a key to replace the Dashboard with a new one.",
     );
   }
-  if (environmentRef.current.environment.target !== target) {
-    const prev = environmentRef.current.environment;
-    prev.stop();
-    environmentRef.current = setupEnvironment(target, prev.vars, prev.facts);
-  }
-  useEffect(
-    () => () => {
-      // stop environment on unmount
-      environmentRef.current?.environment.stop();
-    },
-    [],
-  );
-  const environment = environmentRef.current.environment;
-  const vars = useSyncExternalStore(
-    environmentRef.current.subscribeVars,
-    () => environment.vars,
-  );
-  const facts = useSyncExternalStore(
-    environmentRef.current.subscribeFacts,
-    () => environment.facts,
-  );
-  /* eslint-enable react-hooks/refs */
 
-  /* eslint-disable react-hooks/refs */
-  const actionRef = useRef({ onAction, approveNavigation });
-  actionRef.current = { onAction, approveNavigation };
-  const actionListenerRef = useRef<ActionListener>(undefined);
-  if (!actionListenerRef.current) {
-    actionListenerRef.current = subscribeActions(target, actionRef);
-  }
-  if (actionListenerRef.current.target !== target) {
-    const prev = actionListenerRef.current;
-    prev.controller.abort();
-    actionListenerRef.current = subscribeActions(target, actionRef);
-  }
-  useEffect(
-    () => () => {
-      // stop action listener on unmount
-      actionListenerRef.current?.controller.abort();
-    },
-    [],
+  const [initialVars] = useState(() => Object.entries(initialVarsProp ?? {}));
+  const [initialFacts] = useState(() => Object.entries(initialFactsProp ?? {}));
+
+  const [target, setTarget] = useState<DashboardEventTarget>();
+  const [environment, setEnvironment] = useState<DashboardEnvironment>();
+
+  const actionConfig = { onAction, approveNavigation };
+  const actionRef = useRef(actionConfig);
+  // eslint-disable-next-line react-hooks/refs
+  actionRef.current = actionConfig;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    (async () => {
+      const target = await targetPromise;
+      if (signal.aborted) return;
+
+      const environment = new DashboardEnvironment(target, {
+        vars: initialVars,
+        facts: initialFacts,
+      });
+      signal.addEventListener('abort', () => {
+        environment.stop();
+      });
+      setEnvironment(environment);
+
+      target.addEventListener(
+        'action',
+        (event) => {
+          const action = event.action as
+            | NavigateDashboardAction
+            | { type: never };
+          const { onAction, approveNavigation } = actionRef.current;
+
+          const handled = onAction?.(event.action);
+          if (handled) return;
+
+          switch (action.type) {
+            case 'navigate': {
+              const url = new URL(action.href, window.location.href);
+              if (!approveNavigation(url)) {
+                console.warn(
+                  `Dashboard navigation blocked: URL "${url.href}" is not allowed`,
+                );
+                break;
+              }
+              if (action.replace) window.location.replace(action.href);
+              else window.location.assign(action.href);
+              break;
+            }
+          }
+        },
+        { signal },
+      );
+
+      setTarget(target);
+    })();
+
+    return () => {
+      controller.abort();
+    };
+  }, [targetPromise, initialVars, initialFacts]);
+
+  const vars = useSyncExternalStore(
+    useCallback(
+      (cb: () => void) => {
+        if (!environment) return () => {};
+        const controller = new AbortController();
+        const signal = controller.signal;
+        environment.addEventListener(
+          'var',
+          () => {
+            cb();
+          },
+          { signal },
+        );
+        return () => {
+          controller.abort();
+        };
+      },
+      [environment],
+    ),
+    () => environment?.vars ?? initialVars,
   );
-  /* eslint-enable react-hooks/refs */
+
+  const facts = useSyncExternalStore(
+    useCallback(
+      (cb: () => void) => {
+        if (!environment) return () => {};
+        const controller = new AbortController();
+        const signal = controller.signal;
+        environment.addEventListener(
+          'fact',
+          () => {
+            cb();
+          },
+          { signal },
+        );
+        return () => {
+          controller.abort();
+        };
+      },
+      [environment],
+    ),
+    () => environment?.facts ?? initialFacts,
+  );
 
   const varMap = useMemo(() => Object.fromEntries(vars), [vars]);
   const factMap = useMemo(() => Object.fromEntries(facts), [facts]);
+
   const context = useMemo(
     () => ({
       target,
@@ -140,82 +205,3 @@ export function Dashboard({
   );
 }
 Dashboard.displayName = 'Dashboard';
-
-type EnvironmentHandler = {
-  environment: DashboardEnvironment;
-  subscribeVars: (cb: () => void) => () => void;
-  subscribeFacts: (cb: () => void) => () => void;
-};
-
-function setupEnvironment(
-  target: DashboardEventTarget,
-  vars?: readonly [name: string, value: DashboardVar][],
-  facts?: readonly [name: string, value: DashboardFact][],
-): EnvironmentHandler {
-  const environment = new DashboardEnvironment(target, { vars, facts });
-
-  return {
-    environment,
-    subscribeVars: (cb) => {
-      const controller = new AbortController();
-      const signal = controller.signal;
-      environment.addEventListener('var', cb, { signal });
-      return () => {
-        controller.abort();
-      };
-    },
-    subscribeFacts: (cb) => {
-      const controller = new AbortController();
-      const signal = controller.signal;
-      environment.addEventListener('fact', cb, { signal });
-      return () => {
-        controller.abort();
-      };
-    },
-  };
-}
-
-type ActionListener = {
-  target: DashboardEventTarget;
-  controller: AbortController;
-};
-
-function subscribeActions(
-  target: DashboardEventTarget,
-  actionRef: RefObject<{
-    onAction?: (action: DashboardAction) => boolean | void;
-    approveNavigation: ApproveNavigationFunction;
-  }>,
-): ActionListener {
-  const controller = new AbortController();
-
-  target.addEventListener(
-    'action',
-
-    (event) => {
-      const action = event.action as NavigateDashboardAction | { type: never };
-      const { onAction, approveNavigation } = actionRef.current;
-
-      const handled = onAction?.(event.action);
-      if (handled) return;
-
-      switch (action.type) {
-        case 'navigate': {
-          const url = new URL(action.href, window.location.href);
-          if (!approveNavigation(url)) {
-            console.warn(
-              `Dashboard navigation blocked: URL "${url.href}" is not allowed`,
-            );
-            break;
-          }
-          if (action.replace) window.location.replace(action.href);
-          else window.location.assign(action.href);
-          break;
-        }
-      }
-    },
-    { signal: controller.signal },
-  );
-
-  return { target, controller };
-}

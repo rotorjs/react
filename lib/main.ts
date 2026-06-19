@@ -8,5 +8,7 @@ export * from './DashboardTileContainer';
 export * from './DashboardTileError';
 export * from './DashboardTiles';
 export * from './getNodeKey';
+export * from './useDashboardContext';
+export * from './useDashboardLayoutContext';
 export * from './useDashboardState';
 export * from './useNumberFormatter';

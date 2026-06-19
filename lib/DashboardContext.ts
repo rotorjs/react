@@ -22,7 +22,7 @@ export type DashboardTileMap = Record<string, ComponentType<DashboardTileNode>>;
 export type ApproveUserActionFunction = (action: DashboardAction) => boolean;
 
 export type DashboardContextValue = {
-  target: DashboardEventTarget;
+  target?: DashboardEventTarget;
   vars: { [name: string]: DashboardVar };
   facts: { [name: string]: DashboardFact };
   layouts: DashboardLayoutMap;
