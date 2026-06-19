@@ -9,7 +9,7 @@ import {
   type NavigateDashboardAction,
 } from '@rotorjs/dashboard';
 import deepEquals from 'fast-deep-equal';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   DashboardContext,
   type ApproveUserActionFunction,
@@ -19,7 +19,10 @@ import {
 import { DashboardLayout } from './DashboardLayout';
 import { DashboardTiles } from './DashboardTiles';
 
-const defaultNavigateOrigins = { [window.location.origin]: true };
+export type ApproveNavigationFunction = (url: URL) => boolean;
+
+const defaultApproveNavigation: ApproveNavigationFunction = (url) =>
+  url.origin === window.location.origin;
 
 export type DashboardProps = {
   target: DashboardEventTarget;
@@ -31,8 +34,8 @@ export type DashboardProps = {
   layout?: DashboardLayoutNode;
   content: DashboardTileNode[];
   approveUserAction?: ApproveUserActionFunction;
+  approveNavigation?: ApproveNavigationFunction;
   onAction?: (action: DashboardAction) => boolean | void;
-  allowedNavigateOrigins?: { [origin: string]: boolean };
   children?: ReactNode;
 };
 
@@ -46,19 +49,16 @@ export function Dashboard({
   layout,
   content,
   approveUserAction,
+  approveNavigation = defaultApproveNavigation,
   onAction,
-  allowedNavigateOrigins: rawAllowedNavigateOrigins = defaultNavigateOrigins,
   children,
 }: DashboardProps) {
-  const [allowedNavigateOrigins, setAllowedNavigateOrigins] = useState(
-    rawAllowedNavigateOrigins,
-  );
   const [vars, setVars] = useState(initialVars ?? {});
   const [facts, setFacts] = useState(initialFacts ?? {});
 
-  if (!deepEquals(allowedNavigateOrigins, rawAllowedNavigateOrigins)) {
-    setAllowedNavigateOrigins(rawAllowedNavigateOrigins);
-  }
+  const approveNavigationRef = useRef(approveNavigation);
+  // eslint-disable-next-line react-hooks/refs
+  approveNavigationRef.current = approveNavigation;
 
   useEffect(() => {
     const environment = new DashboardEnvironment(target, { vars, facts });
@@ -109,14 +109,9 @@ export function Dashboard({
         switch (action.type) {
           case 'navigate': {
             const url = new URL(action.href, window.location.href);
-            const origin = url.origin;
-            if (
-              !allowedNavigateOrigins['*'] &&
-              (!Object.hasOwn(allowedNavigateOrigins, origin) ||
-                !allowedNavigateOrigins[origin])
-            ) {
+            if (!approveNavigationRef.current(url)) {
               console.warn(
-                `Dashboard navigation blocked: origin "${origin}" is not allowed`,
+                `Dashboard navigation blocked: URL "${url.href}" is not allowed`,
               );
               break;
             }
@@ -132,7 +127,7 @@ export function Dashboard({
     return () => {
       controller.abort();
     };
-  }, [target, onAction, allowedNavigateOrigins]);
+  }, [target, onAction]);
 
   const context = useMemo(
     () => ({
