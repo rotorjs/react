@@ -101,8 +101,7 @@ export function Dashboard({
         'action',
         (event) => {
           const action = event.action as
-            | NavigateDashboardAction
-            | { type: never };
+            NavigateDashboardAction | { type: never };
           const { onAction, approveNavigation } = actionRef.current;
 
           const handled = onAction?.(event.action);
