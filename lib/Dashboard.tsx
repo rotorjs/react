@@ -197,9 +197,9 @@ export function Dashboard({
     <DashboardContext.Provider value={context}>
       <DashboardLayout layout={layout}>
         <DashboardTiles content={content} />
-
-        {children}
       </DashboardLayout>
+
+      {children}
     </DashboardContext.Provider>
   );
 }
